@@ -1,0 +1,87 @@
+# Environment variables - NEVER COMMIT THESE
+.env
+.env.local
+.env.*.local
+
+# User-specific files
+*.suo
+*.user
+*.userosbutput
+*.sln.docstates
+
+# Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+build/
+bld/
+[Bb]in/
+[Oo]bj/
+
+# Visual Studio cache/options
+.vs/
+*.vsidx
+*.vspscc
+*.vssscc
+.vscode/
+
+# ReSharper
+_ReSharper*/
+*.[Rr]e[Ss]harper
+*.DotSettings.user
+
+# NuGet Packages
+*.nupkg
+**/packages/*
+!**/packages/build/
+*.nuget.props
+*.nuget.targets
+
+# MSTest test Results
+[Tt]est[Rr]esult*/
+[Bb]uild[Ll]og.*
+
+# Database files
+*.mdf
+*.ldf
+*.ndf
+
+# SQL Server files
+*.bak
+
+# Node modules (if any frontend tooling)
+node_modules/
+npm-debug.log*
+
+# Logs
+logs/
+*.log
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+*.swp
+*.swo
+*~
+
+# Secrets and credentials
+appsettings.*.json
+!appsettings.json
+!appsettings.Development.json
+secrets.json
+*.pfx
+*.p12
+
+# Local database
+*.db
+*.db-shm
+*.db-wal
+
+# Claude Code
+.claude/settings.local.json
