@@ -1,0 +1,93 @@
+# ======================
+# Build Stage
+# ======================
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
+WORKDIR /src
+
+ENV NUGET_PACKAGES=/root/.nuget/packages
+ENV DOTNET_CLI_HOME=/tmp/dotnet
+ENV NUGET_FALLBACK_PACKAGES=/tmp/fallback-packages
+ENV RestorePackagesPath=/root/.nuget/packages
+
+# Create NuGet config to avoid Windows paths
+RUN mkdir -p /tmp/dotnet /tmp/fallback-packages && \
+    echo '<?xml version="1.0" encoding="utf-8"?>' > /tmp/dotnet/NuGet.Config && \
+    echo '<configuration>' >> /tmp/dotnet/NuGet.Config && \
+    echo '  <packageSources>' >> /tmp/dotnet/NuGet.Config && \
+    echo '    <add key="nuget.org" value="https://api.nuget.org/v3/index.json" protocolVersion="3" />' >> /tmp/dotnet/NuGet.Config && \
+    echo '  </packageSources>' >> /tmp/dotnet/NuGet.Config && \
+    echo '  <config>' >> /tmp/dotnet/NuGet.Config && \
+    echo '    <add key="globalPackagesFolder" value="/root/.nuget/packages" />' >> /tmp/dotnet/NuGet.Config && \
+    echo '  </config>' >> /tmp/dotnet/NuGet.Config && \
+    echo '</configuration>' >> /tmp/dotnet/NuGet.Config
+
+# Copy solution file
+COPY AgentPay.sln .
+
+# Copy all project files
+COPY src/AgentPay.Web/AgentPay.Web.csproj src/AgentPay.Web/
+COPY src/AgentPay.Application/AgentPay.Application.csproj src/AgentPay.Application/
+COPY src/AgentPay.Domain/AgentPay.Domain.csproj src/AgentPay.Domain/
+COPY src/AgentPay.Infrastructure/AgentPay.Infrastructure.csproj src/AgentPay.Infrastructure/
+COPY src/AgentPay.AI/AgentPay.AI.csproj src/AgentPay.AI/
+COPY src/AgentPay.MCP/AgentPay.MCP.csproj src/AgentPay.MCP/
+COPY src/AgentPay.Shared/AgentPay.Shared.csproj src/AgentPay.Shared/
+
+# Restore dependencies
+    RUN dotnet restore src/AgentPay.Web/AgentPay.Web.csproj
+# Copy all source code
+COPY src/ src/
+
+# Clean any Windows build artifacts
+RUN find /src -type d -name "obj" -exec rm -rf {} + 2>/dev/null || true
+RUN find /src -type d -name "bin" -exec rm -rf {} + 2>/dev/null || true
+
+# Build the application
+WORKDIR /src/src/AgentPay.Web
+RUN dotnet build -c Release -o /app/build
+
+# ======================
+# Publish Stage
+# ======================
+FROM build AS publish
+RUN dotnet publish -c Release -o /app/publish /p:UseAppHost=false --no-restore
+
+# ======================
+# Runtime Stage
+# ======================
+FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS final
+WORKDIR /app
+
+# Install dependencies
+RUN apt-get update && apt-get install -y \
+    curl \
+    wget \
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+# Create non-root user
+RUN useradd -m -s /bin/bash agentpay && \
+    mkdir -p /app/data /app/logs && \
+    chown -R agentpay:agentpay /app
+
+# Copy published application
+COPY --from=publish --chown=agentpay:agentpay /app/publish .
+
+# Switch to non-root user
+USER agentpay
+
+# Expose ports
+EXPOSE 80
+EXPOSE 443
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+  CMD curl -f http://localhost:80/health || exit 1
+
+# Set environment variables
+ENV ASPNETCORE_URLS=http://+:80 \
+    DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false \
+    DOTNET_RUNNING_IN_CONTAINER=true
+
+# Entry point
+ENTRYPOINT ["dotnet", "AgentPay.Web.dll"]

@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="7.2.0" />
+    <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore" Version="10.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\AgentPay.Application\AgentPay.Application.csproj" />
+    <ProjectReference Include="..\AgentPay.Domain\AgentPay.Domain.csproj" />
+    <ProjectReference Include="..\AgentPay.Infrastructure\AgentPay.Infrastructure.csproj" />
+    <ProjectReference Include="..\AgentPay.AI\AgentPay.AI.csproj" />
+  </ItemGroup>
+
+</Project>

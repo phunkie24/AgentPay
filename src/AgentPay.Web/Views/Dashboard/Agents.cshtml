@@ -1,0 +1,65 @@
+@model List<AgentPay.Application.DTOs.AgentDto>
+@{
+    ViewData["Title"] = "Dashboard - Agents";
+}
+
+<div class="container">
+    <div class="page-header">
+        <h1>Agent Dashboard</h1>
+        <a href="/Agent/Create" class="btn btn-primary">New Agent</a>
+    </div>
+
+    <div class="dashboard-stats">
+        <div class="stat-card">
+            <div class="stat-value">@Model.Count</div>
+            <div class="stat-label">Total Agents</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">@Model.Count(a => a.Status == "Active")</div>
+            <div class="stat-label">Active Agents</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">@Model.Sum(a => a.Balance).ToString("N2")</div>
+            <div class="stat-label">Total Balance (MNEE)</div>
+        </div>
+    </div>
+
+    <div class="agents-table">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Role</th>
+                    <th>Status</th>
+                    <th>Balance</th>
+                    <th>Wallet</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var agent in Model)
+                {
+                    <tr>
+                        <td><strong>@agent.Name</strong></td>
+                        <td><span class="badge badge-role">@agent.Role</span></td>
+                        <td>
+                            <span class="badge @(agent.Status == "Active" ? "badge-active" : "badge-inactive")">
+                                @agent.Status
+                            </span>
+                        </td>
+                        <td>@agent.Balance.ToString("N8") MNEE</td>
+                        <td><code>@agent.WalletAddress.Substring(0, 16)...</code></td>
+                        <td>
+                            <a href="/Agent/Details/@agent.Id" class="btn btn-sm btn-primary">View</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/signalr.min.js"></script>
+    <script src="~/js/dashboard.js"></script>
+}
