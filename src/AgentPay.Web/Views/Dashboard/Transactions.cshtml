@@ -1,0 +1,86 @@
+@model List<AgentPay.Application.DTOs.TransactionDto>
+@{
+    ViewData["Title"] = "Dashboard - Transactions";
+}
+
+<div class="container">
+    <div class="page-header">
+        <h1>Transaction Dashboard</h1>
+    </div>
+
+    <div class="dashboard-stats">
+        <div class="stat-card">
+            <div class="stat-value">@Model.Count</div>
+            <div class="stat-label">Total Transactions</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">@Model.Count(t => t.Status == "Pending")</div>
+            <div class="stat-label">Pending</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">@Model.Count(t => t.Status == "Completed")</div>
+            <div class="stat-label">Completed</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">@Model.Sum(t => t.Amount).ToString("N2")</div>
+            <div class="stat-label">Total Volume (MNEE)</div>
+        </div>
+    </div>
+
+    <div class="transactions-chart">
+        <canvas id="transactionsChart" height="100"></canvas>
+    </div>
+
+    <div class="transactions-table">
+        <h3>Recent Transactions</h3>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Hash</th>
+                    <th>Agent</th>
+                    <th>Amount</th>
+                    <th>Status</th>
+                    <th>Time</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var tx in Model.OrderByDescending(t => t.InitiatedAt).Take(20))
+                {
+                    <tr>
+                        <td><code>@(tx.TransactionHash ?? tx.Id.ToString().Substring(0, 10))</code></td>
+                        <td><a href="/Agent/Details/@tx.AgentId">@tx.AgentId.ToString().Substring(0, 8)</a></td>
+                        <td><strong>@tx.Amount.ToString("N8") MNEE</strong></td>
+                        <td><span class="badge badge-@tx.Status.ToLower()">@tx.Status</span></td>
+                        <td>@tx.InitiatedAt.ToString("g")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/signalr.min.js"></script>
+    <script src="~/js/dashboard.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Sample chart data - would normally come from API
+        const ctx = document.getElementById('transactionsChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                datasets: [{
+                    label: 'Transactions',
+                    data: [12, 19, 3, 5, 2, 3],
+                    borderColor: 'rgb(79, 70, 229)',
+                    tension: 0.1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true
+            }
+        });
+    </script>
+}

@@ -1,0 +1,129 @@
+@model AgentPay.Application.DTOs.AgentDto
+@{
+    ViewData["Title"] = "Agent Details";
+}
+
+<div class="container">
+    <div class="page-header">
+        <h1>Agent Details</h1>
+        <div class="action-buttons">
+            @if (Model.Status == "Active")
+            {
+                <form method="post" asp-action="Deactivate" asp-route-id="@Model.Id" style="display:inline;">
+                    <button type="submit" class="btn btn-warning">Deactivate</button>
+                </form>
+            }
+            else
+            {
+                <form method="post" asp-action="Activate" asp-route-id="@Model.Id" style="display:inline;">
+                    <button type="submit" class="btn btn-primary">Activate</button>
+                </form>
+            }
+            <a href="/Agent" class="btn btn-secondary">Back to List</a>
+        </div>
+    </div>
+
+    <div class="agent-details">
+        <div class="detail-card">
+            <h2>@Model.Name</h2>
+            <div class="detail-grid">
+                <div class="detail-item">
+                    <label>ID:</label>
+                    <span>@Model.Id</span>
+                </div>
+                <div class="detail-item">
+                    <label>Role:</label>
+                    <span class="badge badge-role">@Model.Role</span>
+                </div>
+                <div class="detail-item">
+                    <label>Status:</label>
+                    <span class="badge @(Model.Status == "Active" ? "badge-active" : "badge-inactive")">
+                        @Model.Status
+                    </span>
+                </div>
+                <div class="detail-item">
+                    <label>Wallet Address:</label>
+                    <code>@Model.WalletAddress</code>
+                </div>
+                <div class="detail-item">
+                    <label>Balance:</label>
+                    <strong>@Model.Balance.ToString("N8") MNEE</strong>
+                </div>
+            </div>
+        </div>
+
+        @if (ViewBag.Statistics != null)
+        {
+            var stats = ViewBag.Statistics;
+            <div class="stats-section">
+                <h3>Statistics</h3>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value">@stats.TotalTransactions</div>
+                        <div class="stat-label">Total Transactions</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">@stats.SuccessfulPayments</div>
+                        <div class="stat-label">Successful Payments</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">@stats.TotalSpent.ToString("N2") MNEE</div>
+                        <div class="stat-label">Total Spent</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">@stats.ActiveSessions</div>
+                        <div class="stat-label">Active Sessions</div>
+                    </div>
+                </div>
+            </div>
+        }
+
+        @if (ViewBag.Transactions != null && ((List<AgentPay.Application.DTOs.TransactionDto>)ViewBag.Transactions).Count > 0)
+        {
+            <div class="transactions-section">
+                <h3>Recent Transactions</h3>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Transaction Hash</th>
+                            <th>Service</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var tx in (List<AgentPay.Application.DTOs.TransactionDto>)ViewBag.Transactions)
+                        {
+                            <tr>
+                                <td><code>@tx.TransactionHash</code></td>
+                                <td>@tx.ServiceId</td>
+                                <td>@tx.Amount.ToString("N8") MNEE</td>
+                                <td><span class="badge">@tx.Status</span></td>
+                                <td>@tx.InitiatedAt.ToString("g")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/signalr.min.js"></script>
+    <script>
+        const agentId = '@Model.Id';
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl("/hubs/agentpay")
+            .build();
+
+        connection.on("AgentStatusChanged", (id, status) => {
+            if (id === agentId) {
+                location.reload();
+            }
+        });
+
+        connection.start().catch(err => console.error(err));
+    </script>
+}

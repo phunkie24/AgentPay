@@ -1,0 +1,32 @@
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<div class="dashboard">
+    <h1>Agent Dashboard</h1>
+    
+    <div class="stats-grid">
+        <div class="stat-card">
+            <h3>Active Agents</h3>
+            <p class="stat-value">6</p>
+        </div>
+        <div class="stat-card">
+            <h3>Total Transactions</h3>
+            <p class="stat-value">142</p>
+        </div>
+        <div class="stat-card">
+            <h3>MNEE Volume</h3>
+            <p class="stat-value">5,234</p>
+        </div>
+        <div class="stat-card">
+            <h3>Success Rate</h3>
+            <p class="stat-value">98.2%</p>
+        </div>
+    </div>
+
+    <div class="charts">
+        <div class="chart-container">
+            <canvas id="transactionsChart"></canvas>
+        </div>
+    </div>
+</div>

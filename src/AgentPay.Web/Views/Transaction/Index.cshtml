@@ -1,0 +1,113 @@
+@model List<AgentPay.Application.DTOs.TransactionDto>
+@{
+    ViewData["Title"] = "Transactions";
+}
+
+<div class="container">
+    <div class="page-header">
+        <h1>Transactions</h1>
+        <div class="filter-buttons">
+            <button class="btn btn-sm" data-filter="all">All</button>
+            <button class="btn btn-sm" data-filter="pending">Pending</button>
+            <button class="btn btn-sm" data-filter="completed">Completed</button>
+            <button class="btn btn-sm" data-filter="failed">Failed</button>
+        </div>
+    </div>
+
+    <div class="transactions-table">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Agent</th>
+                    <th>Service</th>
+                    <th>Amount</th>
+                    <th>Hash</th>
+                    <th>Status</th>
+                    <th>Initiated</th>
+                    <th>Completed</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="transactionsTable">
+                @foreach (var tx in Model)
+                {
+                    <tr data-status="@tx.Status.ToLower()">
+                        <td><code>@tx.Id.ToString().Substring(0, 8)</code></td>
+                        <td><a href="/Agent/Details/@tx.AgentId">Agent @tx.AgentId.ToString().Substring(0, 8)</a></td>
+                        <td>@tx.ServiceId.ToString().Substring(0, 8)</td>
+                        <td><strong>@tx.Amount.ToString("N8") MNEE</strong></td>
+                        <td>
+                            @if (!string.IsNullOrEmpty(tx.TransactionHash))
+                            {
+                                <code>@tx.TransactionHash.Substring(0, 10)...</code>
+                            }
+                            else
+                            {
+                                <span class="text-muted">Pending</span>
+                            }
+                        </td>
+                        <td>
+                            <span class="badge badge-@tx.Status.ToLower()">
+                                @tx.Status
+                            </span>
+                        </td>
+                        <td>@tx.InitiatedAt.ToString("g")</td>
+                        <td>
+                            @if (tx.CompletedAt.HasValue)
+                            {
+                                @tx.CompletedAt.Value.ToString("g")
+                            }
+                            else
+                            {
+                                <span class="text-muted">-</span>
+                            }
+                        </td>
+                        <td>
+                            <a href="/Transaction/Details/@tx.Id" class="btn btn-sm btn-primary">Details</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    @if (Model.Count == 0)
+    {
+        <div class="empty-state">
+            <p>No transactions found.</p>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script src="~/js/signalr.min.js"></script>
+    <script>
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl("/hubs/agentpay")
+            .build();
+
+        connection.on("TransactionUpdated", (data) => {
+            console.log("Transaction updated:", data);
+            location.reload();
+        });
+
+        connection.start().catch(err => console.error(err));
+
+        // Filter functionality
+        document.querySelectorAll('[data-filter]').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const filter = e.target.dataset.filter;
+                const rows = document.querySelectorAll('#transactionsTable tr');
+
+                rows.forEach(row => {
+                    if (filter === 'all' || row.dataset.status === filter) {
+                        row.style.display = '';
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
+            });
+        });
+    </script>
+}

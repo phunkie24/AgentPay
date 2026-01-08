@@ -1,0 +1,64 @@
+@model List<AgentPay.Application.DTOs.AgentDto>
+@{
+    ViewData["Title"] = "All Agents";
+}
+
+<div class="container">
+    <div class="page-header">
+        <h1>All Agents</h1>
+        <a href="/Agent/Create" class="btn btn-primary">Create New Agent</a>
+    </div>
+
+    <div class="agents-grid">
+        @foreach (var agent in Model)
+        {
+            <div class="agent-card">
+                <div class="agent-header">
+                    <h3>@agent.Name</h3>
+                    <span class="badge @(agent.Status == "Active" ? "badge-active" : "badge-inactive")">
+                        @agent.Status
+                    </span>
+                </div>
+                <div class="agent-details">
+                    <div class="detail-row">
+                        <span class="label">Role:</span>
+                        <span class="value badge badge-role">@agent.Role</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="label">Balance:</span>
+                        <span class="value">@agent.Balance.ToString("N8") MNEE</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="label">Wallet:</span>
+                        <code class="value-small">@agent.WalletAddress.Substring(0, 10)...</code>
+                    </div>
+                </div>
+                <div class="agent-actions">
+                    <a href="/Agent/Details/@agent.Id" class="btn btn-sm btn-primary">View Details</a>
+                </div>
+            </div>
+        }
+    </div>
+
+    @if (Model.Count == 0)
+    {
+        <div class="empty-state">
+            <p>No agents found. <a href="/Agent/Create">Create your first agent</a></p>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script src="~/js/signalr.min.js"></script>
+    <script>
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl("/hubs/agentpay")
+            .build();
+
+        connection.on("AgentStatusChanged", () => {
+            location.reload();
+        });
+
+        connection.start().catch(err => console.error(err));
+    </script>
+}

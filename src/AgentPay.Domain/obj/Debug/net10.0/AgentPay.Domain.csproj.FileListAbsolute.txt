@@ -1,0 +1,11 @@
+C:\Users\funke\Downloads\MNNE_Project\AgentPay\src\AgentPay.Domain\bin\Debug\net10.0\AgentPay.Domain.deps.json
+C:\Users\funke\Downloads\MNNE_Project\AgentPay\src\AgentPay.Domain\bin\Debug\net10.0\AgentPay.Domain.dll
+C:\Users\funke\Downloads\MNNE_Project\AgentPay\src\AgentPay.Domain\bin\Debug\net10.0\AgentPay.Domain.pdb
+C:\Users\funke\Downloads\MNNE_Project\AgentPay\src\AgentPay.Domain\obj\Debug\net10.0\AgentPay.Domain.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\funke\Downloads\MNNE_Project\AgentPay\src\AgentPay.Domain\obj\Debug\net10.0\AgentPay.Domain.AssemblyInfoInputs.cache
+C:\Users\funke\Downloads\MNNE_Project\AgentPay\src\AgentPay.Domain\obj\Debug\net10.0\AgentPay.Domain.AssemblyInfo.cs
+C:\Users\funke\Downloads\MNNE_Project\AgentPay\src\AgentPay.Domain\obj\Debug\net10.0\AgentPay.Domain.csproj.CoreCompileInputs.cache
+C:\Users\funke\Downloads\MNNE_Project\AgentPay\src\AgentPay.Domain\obj\Debug\net10.0\AgentPay.Domain.dll
+C:\Users\funke\Downloads\MNNE_Project\AgentPay\src\AgentPay.Domain\obj\Debug\net10.0\refint\AgentPay.Domain.dll
+C:\Users\funke\Downloads\MNNE_Project\AgentPay\src\AgentPay.Domain\obj\Debug\net10.0\AgentPay.Domain.pdb
+C:\Users\funke\Downloads\MNNE_Project\AgentPay\src\AgentPay.Domain\obj\Debug\net10.0\ref\AgentPay.Domain.dll

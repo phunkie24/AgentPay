@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - AgentPay</title>
+    <link rel="stylesheet" href="~/css/site.css" />
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="container">
+                <a href="/" class="navbar-brand">🤖 AgentPay</a>
+                <ul class="navbar-nav">
+                    <li><a href="/Dashboard">Dashboard</a></li>
+                    <li><a href="/Agent">Agents</a></li>
+                    <li><a href="/Transaction">Transactions</a></li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+    <main>
+        @RenderBody()
+    </main>
+    <footer>
+        <p>&copy; 2026 AgentPay - MNEE Hackathon</p>
+    </footer>
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

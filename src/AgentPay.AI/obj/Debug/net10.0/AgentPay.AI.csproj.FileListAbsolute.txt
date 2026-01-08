@@ -1,0 +1,15 @@
+C:\Users\funke\Downloads\MNNE_Project\AgentPay\src\AgentPay.AI\bin\Debug\net10.0\AgentPay.AI.deps.json
+C:\Users\funke\Downloads\MNNE_Project\AgentPay\src\AgentPay.AI\bin\Debug\net10.0\AgentPay.AI.dll
+C:\Users\funke\Downloads\MNNE_Project\AgentPay\src\AgentPay.AI\bin\Debug\net10.0\AgentPay.AI.pdb
+C:\Users\funke\Downloads\MNNE_Project\AgentPay\src\AgentPay.AI\bin\Debug\net10.0\AgentPay.Domain.dll
+C:\Users\funke\Downloads\MNNE_Project\AgentPay\src\AgentPay.AI\bin\Debug\net10.0\AgentPay.Domain.pdb
+C:\Users\funke\Downloads\MNNE_Project\AgentPay\src\AgentPay.AI\obj\Debug\net10.0\AgentPay.AI.csproj.AssemblyReference.cache
+C:\Users\funke\Downloads\MNNE_Project\AgentPay\src\AgentPay.AI\obj\Debug\net10.0\AgentPay.AI.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\funke\Downloads\MNNE_Project\AgentPay\src\AgentPay.AI\obj\Debug\net10.0\AgentPay.AI.AssemblyInfoInputs.cache
+C:\Users\funke\Downloads\MNNE_Project\AgentPay\src\AgentPay.AI\obj\Debug\net10.0\AgentPay.AI.AssemblyInfo.cs
+C:\Users\funke\Downloads\MNNE_Project\AgentPay\src\AgentPay.AI\obj\Debug\net10.0\AgentPay.AI.csproj.CoreCompileInputs.cache
+C:\Users\funke\Downloads\MNNE_Project\AgentPay\src\AgentPay.AI\obj\Debug\net10.0\AgentPay.64C76288.Up2Date
+C:\Users\funke\Downloads\MNNE_Project\AgentPay\src\AgentPay.AI\obj\Debug\net10.0\AgentPay.AI.dll
+C:\Users\funke\Downloads\MNNE_Project\AgentPay\src\AgentPay.AI\obj\Debug\net10.0\refint\AgentPay.AI.dll
+C:\Users\funke\Downloads\MNNE_Project\AgentPay\src\AgentPay.AI\obj\Debug\net10.0\AgentPay.AI.pdb
+C:\Users\funke\Downloads\MNNE_Project\AgentPay\src\AgentPay.AI\obj\Debug\net10.0\ref\AgentPay.AI.dll

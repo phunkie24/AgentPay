@@ -1,0 +1,147 @@
+@{
+    ViewData["Title"] = "Dashboard - Analytics";
+}
+
+<div class="container">
+    <div class="page-header">
+        <h1>Analytics Dashboard</h1>
+    </div>
+
+    <div class="analytics-grid">
+        <div class="analytics-card">
+            <h3>Agent Performance</h3>
+            <canvas id="agentPerformanceChart"></canvas>
+        </div>
+
+        <div class="analytics-card">
+            <h3>Transaction Success Rate</h3>
+            <canvas id="successRateChart"></canvas>
+        </div>
+
+        <div class="analytics-card">
+            <h3>Network Activity</h3>
+            <div class="network-stats">
+                <div class="network-stat">
+                    <label>Block Number:</label>
+                    <span id="blockNumber">Loading...</span>
+                </div>
+                <div class="network-stat">
+                    <label>Gas Price:</label>
+                    <span id="gasPrice">Loading...</span>
+                </div>
+                <div class="network-stat">
+                    <label>Network Status:</label>
+                    <span id="networkStatus" class="badge badge-active">Connected</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="analytics-card">
+            <h3>Top Agents by Volume</h3>
+            <div class="top-agents-list">
+                <div class="top-agent-item">
+                    <span class="rank">#1</span>
+                    <span class="name">Agent Alpha</span>
+                    <span class="volume">1,234.56 MNEE</span>
+                </div>
+                <div class="top-agent-item">
+                    <span class="rank">#2</span>
+                    <span class="name">Agent Beta</span>
+                    <span class="volume">987.65 MNEE</span>
+                </div>
+                <div class="top-agent-item">
+                    <span class="rank">#3</span>
+                    <span class="name">Agent Gamma</span>
+                    <span class="volume">654.32 MNEE</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="analytics-card full-width">
+            <h3>Recent Activity Log</h3>
+            <div id="activityLog" class="activity-log">
+                <div class="activity-item">
+                    <span class="time">2 minutes ago</span>
+                    <span class="message">Agent Alpha completed transaction of 12.5 MNEE</span>
+                </div>
+                <div class="activity-item">
+                    <span class="time">5 minutes ago</span>
+                    <span class="message">New agent "Agent Delta" created</span>
+                </div>
+                <div class="activity-item">
+                    <span class="time">10 minutes ago</span>
+                    <span class="message">Agent Beta initiated payment session</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/signalr.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Agent Performance Chart
+        const perfCtx = document.getElementById('agentPerformanceChart').getContext('2d');
+        new Chart(perfCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Agent Alpha', 'Agent Beta', 'Agent Gamma', 'Agent Delta'],
+                datasets: [{
+                    label: 'Transactions',
+                    data: [45, 32, 28, 15],
+                    backgroundColor: 'rgba(79, 70, 229, 0.5)'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true
+            }
+        });
+
+        // Success Rate Chart
+        const successCtx = document.getElementById('successRateChart').getContext('2d');
+        new Chart(successCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Successful', 'Failed', 'Pending'],
+                datasets: [{
+                    data: [85, 10, 5],
+                    backgroundColor: [
+                        'rgba(16, 185, 129, 0.8)',
+                        'rgba(239, 68, 68, 0.8)',
+                        'rgba(251, 191, 36, 0.8)'
+                    ]
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true
+            }
+        });
+
+        // SignalR for real-time updates
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl("/hubs/dashboard")
+            .build();
+
+        connection.on("NetworkStatusUpdated", (data) => {
+            document.getElementById('blockNumber').textContent = data.BlockNumber;
+            document.getElementById('gasPrice').textContent = data.GasPrice + ' Gwei';
+            document.getElementById('networkStatus').textContent = data.Status;
+        });
+
+        connection.on("AgentActivity", (data) => {
+            const log = document.getElementById('activityLog');
+            const item = document.createElement('div');
+            item.className = 'activity-item';
+            item.innerHTML = `
+                <span class="time">Just now</span>
+                <span class="message">${data.Activity} - ${data.Details}</span>
+            `;
+            log.prepend(item);
+        });
+
+        connection.start().catch(err => console.error(err));
+    </script>
+}

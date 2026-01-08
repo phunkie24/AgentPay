@@ -1,0 +1,55 @@
+@model List<AgentPay.Application.DTOs.AgentDto>
+@{
+    ViewData["Title"] = "Agents";
+
+    var roleIcons = new Dictionary<string, string>
+    {
+        { "Planner", "🎯" },
+        { "Negotiator", "🤝" },
+        { "Executor", "⚡" },
+        { "Verifier", "✅" },
+        { "Reflector", "🔍" },
+        { "Coordinator", "🎭" }
+    };
+
+    var roleDescriptions = new Dictionary<string, string>
+    {
+        { "Planner", "Strategic decomposition and planning" },
+        { "Negotiator", "Price optimization and negotiation" },
+        { "Executor", "Action execution and tool calling" },
+        { "Verifier", "Verification and validation" },
+        { "Reflector", "Self-reflection and improvement" },
+        { "Coordinator", "Multi-agent orchestration" }
+    };
+}
+
+<div class="agents-page">
+    <h1>AI Agents</h1>
+    <a href="/Agent/Create" class="btn-primary">Create New Agent</a>
+
+    <div class="agents-grid">
+        @foreach (var agent in Model)
+        {
+            var icon = roleIcons.ContainsKey(agent.Role) ? roleIcons[agent.Role] : "🤖";
+            var description = roleDescriptions.ContainsKey(agent.Role) ? roleDescriptions[agent.Role] : "AI Agent";
+
+            <div class="agent-card">
+                <h3>@icon @agent.Name</h3>
+                <p>@description</p>
+                <span class="badge @(agent.Status == "Active" ? "badge-active" : "badge-inactive")">
+                    @agent.Status
+                </span>
+                <div class="agent-actions" style="margin-top: 10px;">
+                    <a href="/Agent/Details/@agent.Id" class="btn btn-sm btn-primary">View Details</a>
+                </div>
+            </div>
+        }
+    </div>
+
+    @if (Model.Count == 0)
+    {
+        <div class="empty-state">
+            <p>No agents found. <a href="/Agent/Create">Create your first agent</a></p>
+        </div>
+    }
+</div>

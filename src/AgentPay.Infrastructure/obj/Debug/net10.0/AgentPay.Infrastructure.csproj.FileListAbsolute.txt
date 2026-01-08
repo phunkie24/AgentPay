@@ -1,0 +1,17 @@
+C:\Users\funke\Downloads\MNNE_Project\AgentPay\src\AgentPay.Infrastructure\bin\Debug\net10.0\AgentPay.Infrastructure.deps.json
+C:\Users\funke\Downloads\MNNE_Project\AgentPay\src\AgentPay.Infrastructure\bin\Debug\net10.0\AgentPay.Infrastructure.runtimeconfig.json
+C:\Users\funke\Downloads\MNNE_Project\AgentPay\src\AgentPay.Infrastructure\bin\Debug\net10.0\AgentPay.Infrastructure.dll
+C:\Users\funke\Downloads\MNNE_Project\AgentPay\src\AgentPay.Infrastructure\bin\Debug\net10.0\AgentPay.Infrastructure.pdb
+C:\Users\funke\Downloads\MNNE_Project\AgentPay\src\AgentPay.Infrastructure\bin\Debug\net10.0\AgentPay.Domain.dll
+C:\Users\funke\Downloads\MNNE_Project\AgentPay\src\AgentPay.Infrastructure\bin\Debug\net10.0\AgentPay.Domain.pdb
+C:\Users\funke\Downloads\MNNE_Project\AgentPay\src\AgentPay.Infrastructure\obj\Debug\net10.0\AgentPay.Infrastructure.csproj.AssemblyReference.cache
+C:\Users\funke\Downloads\MNNE_Project\AgentPay\src\AgentPay.Infrastructure\obj\Debug\net10.0\AgentPay.Infrastructure.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\funke\Downloads\MNNE_Project\AgentPay\src\AgentPay.Infrastructure\obj\Debug\net10.0\AgentPay.Infrastructure.AssemblyInfoInputs.cache
+C:\Users\funke\Downloads\MNNE_Project\AgentPay\src\AgentPay.Infrastructure\obj\Debug\net10.0\AgentPay.Infrastructure.AssemblyInfo.cs
+C:\Users\funke\Downloads\MNNE_Project\AgentPay\src\AgentPay.Infrastructure\obj\Debug\net10.0\AgentPay.Infrastructure.csproj.CoreCompileInputs.cache
+C:\Users\funke\Downloads\MNNE_Project\AgentPay\src\AgentPay.Infrastructure\obj\Debug\net10.0\AgentPay.6A835B6A.Up2Date
+C:\Users\funke\Downloads\MNNE_Project\AgentPay\src\AgentPay.Infrastructure\obj\Debug\net10.0\AgentPay.Infrastructure.dll
+C:\Users\funke\Downloads\MNNE_Project\AgentPay\src\AgentPay.Infrastructure\obj\Debug\net10.0\refint\AgentPay.Infrastructure.dll
+C:\Users\funke\Downloads\MNNE_Project\AgentPay\src\AgentPay.Infrastructure\obj\Debug\net10.0\AgentPay.Infrastructure.pdb
+C:\Users\funke\Downloads\MNNE_Project\AgentPay\src\AgentPay.Infrastructure\obj\Debug\net10.0\AgentPay.Infrastructure.genruntimeconfig.cache
+C:\Users\funke\Downloads\MNNE_Project\AgentPay\src\AgentPay.Infrastructure\obj\Debug\net10.0\ref\AgentPay.Infrastructure.dll

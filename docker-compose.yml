@@ -1,0 +1,250 @@
+version: '3.8'
+
+services:
+  # Web Application (MVC)
+  web:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.web
+    container_name: agentpay-web
+    ports:
+      - "5000:80"
+      - "5001:443"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:80
+      - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=AgentPay;User Id=sa;Password=AgentPay123!;TrustServerCertificate=True;MultipleActiveResultSets=true
+      - Redis__Connection=redis:6379
+      - Blockchain__EthereumRpcUrl=https://eth-mainnet.g.alchemy.com/v2/${ALCHEMY_API_KEY}
+      - Blockchain__MNEEContractAddress=0x8ccedbAe4916b79da7F3F612EfB2EB93A2bFD6cF
+      - Blockchain__ChainId=1
+      - AI__Provider=Ollama
+      - AI__BaseUrl=http://ollama:11434
+      - AI__Model=llama3.2:latest
+      - AI__Temperature=0.7
+      - AI__MaxTokens=4096
+      - MCP__ServerUrl=http://mcpserver:8080
+      - MCP__Enabled=true
+    depends_on:
+      - sqlserver
+      - redis
+      - ollama
+      - mcpserver
+    networks:
+      - agentpay-network
+    volumes:
+      - app-data:/app/data
+      - app-logs:/app/logs
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # MCP Server
+  mcpserver:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.mcpserver
+    container_name: agentpay-mcp
+    ports:
+      - "8080:8080"
+    environment:
+      - MCP__ToolsEnabled=BlockchainTools,PaymentTools,DataTools,AnalyticsTools
+      - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=AgentPay;User Id=sa;Password=AgentPay123!;TrustServerCertificate=True
+      - Redis__Connection=redis:6379
+      - Blockchain__EthereumRpcUrl=https://eth-mainnet.g.alchemy.com/v2/${ALCHEMY_API_KEY}
+      - Blockchain__MNEEContractAddress=0x8ccedbAe4916b79da7F3F612EfB2EB93A2bFD6cF
+    depends_on:
+      - sqlserver
+      - redis
+    networks:
+      - agentpay-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # SQL Server Database
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: agentpay-sqlserver
+    ports:
+      - "1433:1433"
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=AgentPay123!
+      - MSSQL_PID=Developer
+      - MSSQL_TCP_PORT=1433
+    volumes:
+      - sqlserver-data:/var/opt/mssql
+    networks:
+      - agentpay-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P AgentPay123! -Q 'SELECT 1'"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: agentpay-redis
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes --requirepass agentpay_redis
+    volumes:
+      - redis-data:/data
+    networks:
+      - agentpay-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Ollama (Local LLM - 100% FREE!)
+  ollama:
+    image: ollama/ollama:latest
+    container_name: agentpay-ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama-data:/root/.ollama
+    networks:
+      - agentpay-network
+    restart: unless-stopped
+    # GPU support (optional - remove if no GPU)
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: all
+    #           capabilities: [gpu]
+    environment:
+      - OLLAMA_HOST=0.0.0.0
+      - OLLAMA_KEEP_ALIVE=24h
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:11434/api/tags"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Vector Database (Qdrant)
+  vectordb:
+    image: qdrant/qdrant:latest
+    container_name: agentpay-vectordb
+    ports:
+      - "6333:6333"
+      - "6334:6334"
+    volumes:
+      - vectordb-data:/qdrant/storage
+    networks:
+      - agentpay-network
+    restart: unless-stopped
+    environment:
+      - QDRANT__SERVICE__API_KEY=agentpay_vector_key
+
+  # RabbitMQ (Message Queue)
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: agentpay-rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      - RABBITMQ_DEFAULT_USER=agentpay
+      - RABBITMQ_DEFAULT_PASS=agentpay_queue
+      - RABBITMQ_DEFAULT_VHOST=/
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+    networks:
+      - agentpay-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Nginx (Reverse Proxy & Load Balancer)
+  nginx:
+    image: nginx:alpine
+    container_name: agentpay-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./docker/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./docker/ssl:/etc/nginx/ssl:ro
+    depends_on:
+      - web
+    networks:
+      - agentpay-network
+    restart: unless-stopped
+
+  # Prometheus (Monitoring)
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: agentpay-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./docker/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+    networks:
+      - agentpay-network
+    restart: unless-stopped
+
+  # Grafana (Dashboards)
+  grafana:
+    image: grafana/grafana:latest
+    container_name: agentpay-grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=agentpay_admin
+      - GF_INSTALL_PLUGINS=redis-datasource
+    volumes:
+      - grafana-data:/var/lib/grafana
+    depends_on:
+      - prometheus
+    networks:
+      - agentpay-network
+    restart: unless-stopped
+
+volumes:
+  sqlserver-data:
+    driver: local
+  redis-data:
+    driver: local
+  ollama-data:
+    driver: local
+  vectordb-data:
+    driver: local
+  rabbitmq-data:
+    driver: local
+  app-data:
+    driver: local
+  app-logs:
+    driver: local
+  prometheus-data:
+    driver: local
+  grafana-data:
+    driver: local
+
+networks:
+  agentpay-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.25.0.0/16
